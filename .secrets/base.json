@@ -2,5 +2,12 @@
   "SECRET_KEY": "t))q@amim(ff59j6)t03ua)$kjhwm(w$!ka$pthh^9=eimtg^*",
   "SUPERUSER_USERNAME": "smallbee",
   "SUPERUSER_PASSWORD": "asdfqwer",
-  "SUPERUSER_EMAIL": "smallbee3@gmail.com"
+  "SUPERUSER_EMAIL": "smallbee3@gmail.com",
+
+  "RAVEN_CONFIG": {
+    "dsn": "https://d006f6fcde174410b85ed86aa581c3db:4427153b4e0043668c88fa081e12511b@sentry.io/301550",
+    "release": "raven.fetch_git_sha(os.path.abspath(os.pardir))",
+    "release2": "\"raven.fetch_git_sha(os.path.abspath(os.pardir))\""
+  }
 }
+

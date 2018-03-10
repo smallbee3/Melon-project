@@ -35,9 +35,22 @@ secrets = json.loads(open(SECRETS_BASE, 'rt').read())
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+
+
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    STATIC_DIR
+]
+
+
+
+
 
 # Custom-User-Model
-
 AUTH_USER_MODEL = 'members.User'
 
 INSTALLED_APPS = [
@@ -47,6 +60,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Thirdparty app
+    'raven.contrib.django.raven_compat',
 
     # Custom App
     'members',
@@ -211,3 +227,56 @@ def set_config(obj, start=False):
 # raven모듈을 importlib를 사용해 가져온 후 현재 모듈에 'raven'이라는 이름으로 할당
 # setattr(sys.modules[__name__], 'raven', importlib.import_module('raven'))
 set_config(secrets, start=True)
+
+
+# Google에서 django sentry log 검색 후 처음 문서
+# https://docs.sentry.io/clients/python/integrations/django/
+
+# (* Google에서 django sentry로 검색 후 나오는 처음 문서와 이유는 모르나
+#   처음 부분에 내용이 조금 다름)
+#   https://raven.readthedocs.io/en/stable/integrations/django.html
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'sentry': {
+            'level': 'ERROR', # To capture more than ERROR, change to WARNING, INFO, etc.
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'tags': {'custom-tag': 'x'},
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
+}
+
